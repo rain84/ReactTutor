@@ -1,0 +1,13 @@
+{
+  "name": "ReactTutor",
+  "version": "0.0.1",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "rain84",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
