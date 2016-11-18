@@ -2,65 +2,137 @@
  * Created by Aleksandr_Gerasimov on 01-Nov-16.
  */
 
-console.log( React );
-console.log( ReactDOM );
+let model = {};
 
-
-let my_news = [
+model.news = [
   {
-    author : 'Саша Печкин',
-    text   : 'В четверг, четвертого числа...'
+    author  : 'Саша Печкин',
+    text    : 'В четчерг, четвертого числа...',
+    bigText : 'в четыре с четвертью часа четыре чёрненьких чумазеньких чертёнка чертили чёрными чернилами чертёж.'
   },
   {
-    author : 'Просто Вася',
-    text   : 'Считаю, что $ должен стоить 35 рублей!'
+    author  : 'Просто Вася',
+    text    : 'Считаю, что $ должен стоить 35 рублей!',
+    bigText : 'А евро 42!'
   },
   {
-    author : 'Гость',
-    text   : 'Бесплатно. Скачать. Лучший сайт - http://localhost:3000'
+    author  : 'Гость',
+    text    : 'Бесплатно. Скачать. Лучший сайт - http://localhost:3000',
+    bigText : 'На самом деле платно, просто нужно прочитать очень длинное лицензионное соглашение'
   }
 ];
 
-let News = React.createClass( {
-                                render : function () {
-                                  let newsTemplate = this.props.data
-                                    .map( ( item, index ) =>
-                                            (
-                                              <div key={index}>
-                                                <p className="news__author">{item.author}:</p>
-                                                <p className="news__text">{item.text}</p>
-                                              </div>
-                                            )
-                                    );
 
-                                  return (
-                                    <div className="news">
-                                      {newsTemplate}
-                                    </div>
-                                  );
-                                }
-                              } );
-
-let Comments = React.createClass( {
-                                    render : () =>
-                                      <div className="comments">
-                                        Нет новостей - комментировать нечего
-                                      </div>
-                                  } );
-
-let App = React.createClass( {
-                               render : () =>
-                                 <div className="app">
-                                   Всем привет, я компонент App! Я умею отображать новости.
-                                   <News data={my_news}/> {/*comment*/}
-                                   <Comments/>
-                                 </div>
-                             } );
+// model.news.length = 0;
 
 
-let target = document.getElementById( 'root' );
+class Article extends React.Component {
+  constructor() {
+    super();
+
+    this.state = { visible : false };
+
+    this.readMore = ( e ) => {
+      e.preventDefault();
+      this.setState( { visible : true } );
+    };
+  }
+
+  static get propTypes() {
+    return {
+      item : React.PropTypes.shape( {
+                                      author  : React.PropTypes.string.isRequired,
+                                      text    : React.PropTypes.string.isRequired,
+                                      bigText : React.PropTypes.string.isRequired
+                                    } )
+    };
+  }
+
+  render() {
+    let item = this.props.item;
+    let state = this.state;
+
+    let className = {
+      readMore : [
+        'news__readMore',
+        state.visible && 'none'
+      ].join( ' ' ),
+
+      bigText : [
+        'news__big-text',
+        !state.visible && 'none'
+      ].join( ' ' )
+    };
+
+    return (
+      <div className="article">
+        <p className="news__author">{item.author}:</p>
+        <p className="news__text">{item.text}</p>
+
+        <a href="#"
+           onClick={this.readMore}
+           className={
+             'news__readMore' +
+             (state.visible && ' none_')
+           }
+        >Подробнее</a>
+
+        <p className={className.bigText}>{item.bigText}</p>
+      </div>
+    );
+  }
+}
+
+class News extends React.Component {
+  constructor( ...args ) {
+    super( ...args );
+  }
+
+  static get propTypes() {
+    return {
+      data : React.PropTypes.array.isRequired
+    };
+  }
+
+  render() {
+    let data = this.props.data;
+    let haveNews = data && data.length;
+    let className = !data.length && 'none' || '';
+    let newsTemplate = '';
+
+    if ( haveNews ) {
+      newsTemplate = data.map( ( item, index ) => (
+        <Article item={item} key={index}/>
+      ) );
+    }
+
+    else {
+      newsTemplate = <p>К сожалению, новостей нет</p>;
+    }
+
+    return (
+      <div className="news">
+        {newsTemplate}
+        <strong className={className}>News count {newsTemplate.length}</strong>
+      </div>
+    );
+  }
+}
+
+class App extends React.Component {
+  render() {
+    return (
+      <div className="app">
+        <h3>Новости</h3>
+        <News data={model.news}/>
+      </div>
+    );
+  }
+}
+
+
 //noinspection ES6ModulesDependencies
 ReactDOM.render(
   <App/>,
-  target
+  document.getElementById( 'root' )
 );
