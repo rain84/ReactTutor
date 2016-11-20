@@ -52,18 +52,6 @@ class Article extends React.Component {
     let item = this.props.item;
     let state = this.state;
 
-    let className = {
-      readMore : [
-        'news__readMore',
-        state.visible && 'none'
-      ].join( ' ' ),
-
-      bigText : [
-        'news__big-text',
-        !state.visible && 'none'
-      ].join( ' ' )
-    };
-
     return (
       <div className="article">
         <p className="news__author">{item.author}:</p>
@@ -71,13 +59,17 @@ class Article extends React.Component {
 
         <a href="#"
            onClick={this.readMore}
-           className={
-             'news__readMore' +
-             (state.visible && ' none_')
-           }
+           className={ [
+             'news__big-text',
+             state.visible && 'none'
+           ].join( ' ' ) }
         >Подробнее</a>
 
-        <p className={className.bigText}>{item.bigText}</p>
+        <p className={[
+          'news__big-text',
+          !state.visible && 'none'
+        ].join( ' ' )
+        }>{item.bigText}</p>
       </div>
     );
   }
@@ -113,8 +105,34 @@ class News extends React.Component {
     return (
       <div className="news">
         {newsTemplate}
-        <strong className={className}>News count {newsTemplate.length}</strong>
+        <strong className={className}
+        >News count {newsTemplate.length}</strong>
       </div>
+    );
+  }
+}
+
+class TestInput extends React.Component {
+  constructor() {
+    super();
+
+    this.state = { value : '' };
+
+    this.onChange = ( e ) => {
+      e.preventDefault();
+      this.setState( {
+                       value : e.target.value
+                     } );
+    };
+  }
+
+  render() {
+    return (
+      <input className="test-input"
+             value={this.state.value}
+             onChange={this.onChange}
+             placeholder="Введите значение"
+      />
     );
   }
 }
@@ -124,6 +142,7 @@ class App extends React.Component {
     return (
       <div className="app">
         <h3>Новости</h3>
+        <TestInput/>
         <News data={model.news}/>
       </div>
     );
